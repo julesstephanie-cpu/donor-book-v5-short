@@ -2062,7 +2062,18 @@ a.chap:hover .arwx{color:var(--accent)}
   <h2>The working detail behind every section</h2>
   <p class="lead prose">The prospectus makes the case. These three companion sites carry the line-item budgets, the state-by-state model, and the programs the money builds.</p>
 
-  <div id="deeper-open">
+  <div class="locked" data-reveals="deeper-open" data-code="godeeperengine">
+    <div class="lk">Access code required</div>
+    <h4>Enter the access code to go deeper</h4>
+    <p>The companion sites carry the line-item budgets and the state-by-state model. Enter the code you were given to open them.</p>
+    <form autocomplete="off">
+      <input type="password" placeholder="Access code" aria-label="Access code" autocomplete="off">
+      <button type="submit">Unlock</button>
+    </form>
+    <div class="lerr" role="status" aria-live="polite"></div>
+  </div>
+
+  <div id="deeper-open" hidden>
     <div class="dgrid">
       <a class="dcard" href="civic/">
         <span class="dk">Direction 01</span><span class="dt">Civic &amp; Political</span>
