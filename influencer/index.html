@@ -357,6 +357,149 @@ td.ours{background:var(--good-soft);color:var(--ink);font-weight:600}
 /* TOPBAR-MOBILE: a wrapped 10-tab bar is too tall to pin on a phone */
 @media (max-width:640px){.topbar{position:static}}
 </style>
+<!-- MOBILE-POLISH:CSS:START -->
+<style id="mobile-polish">
+/* =====================================================================
+   MOBILE POLISH — phones and small tablets (max-width: 760px).
+   Everything here is scoped to that media query, so desktop is untouched.
+   ===================================================================== */
+@media (max-width:760px){
+
+  /* ---- safety net: never a sideways page scroll ---- */
+  html{overflow-x:clip;-webkit-text-size-adjust:100%;scroll-padding-top:104px}
+  img,video,iframe{max-width:100%;height:auto}
+
+  /* ---- compact header: sticky, one-line swipeable navs, tucks away on scroll-down ---- */
+  .topbar{
+    position:sticky!important;top:env(safe-area-inset-top,0px);z-index:60;
+    padding:8px 0 0!important;transition:transform .22s ease;
+  }
+  body.hdr-off .topbar{transform:translateY(-110%)}
+  .topbar .inner{display:block!important;padding:0!important;max-width:none!important}
+  .topbar .barrow{
+    display:flex!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 10px;
+    padding:0 56px 0 14px;margin:0!important;border:0!important;width:100%!important;
+  }
+  .topbar .barrow:first-child{min-height:34px}
+  .topbar .barrow + .barrow,.topbar .barrow + nav,.topbar nav + .barrow{margin-top:0!important;padding-top:0!important;border-top:0!important}
+  .topbar .barrow > nav{order:2}
+  .wordmark{font-size:12px;letter-spacing:.12em}
+  .sitelinks{margin-left:auto;flex-wrap:nowrap!important;gap:0!important}
+  .sitelinks a{font-size:12px!important;padding:6px 8px!important}
+
+  /* the nav rows: a single line you swipe sideways */
+  .topbar nav,.topbar .groups,.topbar .pager{
+    display:flex!important;flex-wrap:nowrap!important;gap:6px;margin:0!important;
+    padding:6px 14px 9px!important;overflow-x:auto;overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x proximity;
+  }
+  .topbar nav::-webkit-scrollbar,.topbar .groups::-webkit-scrollbar,.topbar .pager::-webkit-scrollbar{display:none}
+  .topbar .pager:empty{display:none!important}
+  .topbar nav > *,.topbar .groups > *,.topbar .pager > *{flex:0 0 auto;scroll-snap-align:center}
+  .topbar nav button,.topbar nav a,.groups a,.pager a{
+    display:inline-flex!important;align-items:center;min-height:38px;padding:0 14px!important;font-size:13px!important;
+  }
+  /* a nav that lives inside the first row (main site): own line, full width edge to edge */
+  .topbar .barrow > nav{flex:0 0 calc(100% + 70px)!important;margin:0 -56px 0 -14px!important;
+    padding-left:14px!important;padding-right:14px!important}
+  .topbar .progress{margin-top:0}
+
+  /* the theme button travels with the header instead of floating over the text */
+  .theme-toggle{width:34px!important;height:34px!important;top:calc(env(safe-area-inset-top,0px) + 6px)!important;right:12px!important;
+    transition:transform .22s ease,opacity .22s ease}
+  .theme-toggle svg{width:18px!important;height:18px!important}
+  body.hdr-off .theme-toggle{transform:translateY(-72px);opacity:0;pointer-events:none}
+
+  /* edge fades that tell you "there is more this way" */
+  [data-cue]{
+    -webkit-mask-image:linear-gradient(to right,transparent 0,#000 var(--cl,0px),#000 calc(100% - var(--cr,0px)),transparent 100%);
+            mask-image:linear-gradient(to right,transparent 0,#000 var(--cl,0px),#000 calc(100% - var(--cr,0px)),transparent 100%);
+  }
+  [data-cue~="l"]{--cl:26px}
+  [data-cue~="r"]{--cr:34px}
+  .swipe-hint{
+    display:flex;align-items:center;justify-content:flex-end;gap:6px;margin:12px 2px -14px;
+    font-family:"Libre Franklin",-apple-system,Helvetica,Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--ink-3);
+    transition:opacity .25s ease;
+  }
+  .swipe-hint.gone{opacity:0;pointer-events:none;height:0;margin:0;overflow:hidden}
+
+  /* ---- charts: keep them readable, let them swipe ---- */
+  figure .fb{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;padding:14px 14px 12px}
+  figure .fb > svg{width:820px;min-width:820px;max-width:none;height:auto;display:block}
+
+  /* ---- tables ---- */
+  .tw,.table-wrap,.inf-table-wrap{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+  .tw table,.table-wrap table,.inf-table-wrap table{font-size:13px;min-width:0}
+  .tw th,.tw td,.table-wrap th,.table-wrap td,.inf-table-wrap th,.inf-table-wrap td{padding:10px 12px}
+  /* three columns or fewer: fit the screen, wrap the words, no swiping needed */
+  .tw.fit table,.table-wrap.fit table,.inf-table-wrap.fit table{width:100%;min-width:0!important}
+  /* wider tables: swipe, with the first column pinned so you keep your place */
+  .tw.wide table,.table-wrap.wide table,.inf-table-wrap.wide table{width:auto;min-width:560px!important;border-collapse:separate;border-spacing:0}
+  .wide th:first-child,.wide td:first-child{
+    position:sticky;left:0;z-index:2;min-width:104px;max-width:140px;
+    background:var(--ground);box-shadow:inset -1px 0 0 var(--border);
+  }
+  .wide thead th:first-child,.wide th:first-child{background:var(--surface)}
+  .wide tr.tone-success td:first-child{background:var(--good-soft)}
+  .wide tr.tone-warning td:first-child{background:var(--warn-soft)}
+  .wide tr.tone-info td:first-child{background:var(--accent-soft)}
+  .wide td,.wide th{white-space:normal}
+  .wide td + td,.wide th + th{min-width:72px}
+  .wide td.long,.wide th.long{min-width:190px}
+  .wide td.mid,.wide th.mid{min-width:130px}
+
+  /* ---- inline-styled two-column grids always stack ---- */
+  .grid[style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  [style*="column-count"]{column-count:1!important}
+
+  /* ---- stat tiles: two across instead of a tall single column ---- */
+  .g4:has(> .stat){grid-template-columns:1fr 1fr!important;gap:10px}
+  .g4 > .stat{padding:14px 15px}
+  .g4 > .stat .v{font-size:25px;line-height:1.1}
+
+  /* ---- cards: titles and pills wrap instead of overflowing ---- */
+  .card .card-title,.card-title{flex-wrap:wrap;row-gap:6px}
+  .tag{max-width:100%;white-space:normal}
+  .inf-slider-label{flex-direction:column;align-items:flex-start;gap:2px}
+  .inf-slider-value{white-space:normal;text-align:left}
+
+  /* ---- sliders: easier to grab, and they don't fight the page scroll ---- */
+  input[type=range]{touch-action:pan-y;min-height:34px}
+
+  /* ---- screenshots become a swipe carousel instead of tiny thumbnails ---- */
+  .side .shots{
+    display:flex!important;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px!important;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain;
+  }
+  .side .shots::-webkit-scrollbar{display:none}
+  .side .shots .shot{flex:0 0 74%;scroll-snap-align:center;margin:0}
+  .phone{max-width:min(300px,86%);margin-left:auto;margin-right:auto}
+
+  /* ---- Previous / Next: big, stacked, thumb-friendly ---- */
+  .next-row{flex-direction:column-reverse!important;align-items:stretch!important}
+  .next-row .next-btn,.next-row .prev-btn{width:100%;min-height:46px;display:flex;align-items:center;justify-content:center;text-align:center}
+  .next-actions{flex-direction:column}
+  .next-actions a{justify-content:center}
+
+  /* ---- main site: the floating "Contents" control becomes a small round menu button ---- */
+  .totop{
+    right:14px!important;bottom:calc(env(safe-area-inset-bottom,0px) + 14px)!important;
+    width:46px;height:46px;padding:0!important;font-size:0!important;display:flex!important;align-items:center;justify-content:center;
+  }
+  .totop::before{
+    content:"";width:20px;height:20px;background:var(--ground);
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E") center/contain no-repeat;
+            mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E") center/contain no-repeat;
+  }
+}
+
+/* the wordmark suffix ("/ Civic & Political") would crowd the links on small phones */
+@media (max-width:480px){
+  .wordmark span{display:none}
+}
+</style>
+<!-- MOBILE-POLISH:CSS:END -->
 </head>
 <body>
 <!-- THE 80 · theme toggle: place immediately after <body> -->
@@ -1415,8 +1558,8 @@ td.ours{background:var(--good-soft);color:var(--ink);font-weight:600}
     document.querySelectorAll("#nav button").forEach(function (b) {
       b.classList.toggle("active", b.getAttribute("data-target") === id);
     });
-    if (history.replaceState) history.replaceState(null, "", "#" + id);
-    window.scrollTo(0, 0);
+    if (history.replaceState && window.__navReady) history.replaceState(null, "", "#" + id);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }
 
   document.querySelectorAll("a.jump").forEach(function (a) {
@@ -1489,7 +1632,20 @@ td.ours{background:var(--good-soft);color:var(--ink);font-weight:600}
   // Deep link: open the section in the URL hash if present
   var hash = (location.hash || "").replace("#", "");
   var valid = SECTIONS.some(function (s) { return s[0] === hash; });
+  // Remove the fragment while loading so the browser does not jump to the section on its own;
+  // show() below opens the right tab, and the hash is restored after load.
+  if (history.replaceState && location.hash) history.replaceState(null, "", location.pathname + location.search);
   show(valid ? hash : "brief");
+
+  // Write the section back into the URL only after the page has finished loading.
+  // (Doing it during startup made the browser smooth-scroll past the header to the section.)
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      window.__navReady = true;
+      var a = document.querySelector("section.page.active");
+      if (a && history.replaceState) history.replaceState(null, "", "#" + a.id);
+    }, 350);
+  });
 })();
 </script>
 <script>
@@ -1521,5 +1677,139 @@ td.ours{background:var(--good-soft);color:var(--ink);font-weight:600}
 })();
 
 </script>
+<!-- MOBILE-POLISH:JS:START -->
+<script id="mobile-polish-js">
+/* MOBILE POLISH — behaviour. Only acts on phones (max-width:760px). */
+(function(){
+  "use strict";
+  if (!window.matchMedia) return;
+  var mq = window.matchMedia("(max-width:760px)");
+  var doc = document, body = doc.body;
+
+  /* ---- 1. header tucks away while reading down, returns on any scroll up ---- */
+  var lastY = window.pageYOffset || 0, ticking = false;
+  function onScroll(){
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(function(){
+      ticking = false;
+      if (!mq.matches){ body.classList.remove("hdr-off"); return; }
+      var y = window.pageYOffset || 0, dy = y - lastY;
+      if (y < 90) body.classList.remove("hdr-off");
+      else if (dy > 10) body.classList.add("hdr-off");
+      else if (dy < -10) body.classList.remove("hdr-off");
+      if (Math.abs(dy) > 10 || y < 90) lastY = y;
+    });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+
+  /* ---- 2. edge fades on anything that scrolls sideways ---- */
+  function cue(el){
+    var l = el.scrollLeft > 4, r = el.scrollLeft + el.clientWidth < el.scrollWidth - 4, v = [];
+    if (l) v.push("l"); if (r) v.push("r");
+    if (v.length) el.setAttribute("data-cue", v.join(" ")); else el.removeAttribute("data-cue");
+  }
+
+  /* ---- 3. "swipe" hint above tables and charts that overflow ---- */
+  function hintFor(el, text){
+    var h = el.__hint;
+    var overflowing = el.scrollWidth > el.clientWidth + 6;
+    if (overflowing && mq.matches){
+      if (!h){
+        h = doc.createElement("div"); h.className = "swipe-hint"; h.setAttribute("aria-hidden","true");
+        h.textContent = text + " →";
+        el.parentNode.insertBefore(h, el); el.__hint = h;
+      }
+      if (!el.__swiped) h.classList.remove("gone");
+    } else if (h){ h.classList.add("gone"); }
+  }
+
+  function classify(el){
+    var t = el.querySelector("table"); if (!t) return;
+    var max = 0, rows = t.rows;
+    for (var i = 0; i < rows.length; i++) max = Math.max(max, rows[i].cells.length);
+    el.classList.toggle("fit", max <= 3);
+    el.classList.toggle("wide", max >= 4);
+    if (max >= 4 && !el.__cols){
+      el.__cols = true;
+      var longest = [];
+      for (var r = 0; r < rows.length; r++){
+        for (var c = 0; c < rows[r].cells.length; c++){
+          var n = (rows[r].cells[c].textContent || "").trim().length;
+          if (!longest[c] || n > longest[c]) longest[c] = n;
+        }
+      }
+      for (var r2 = 0; r2 < rows.length; r2++){
+        for (var c2 = 1; c2 < rows[r2].cells.length; c2++){
+          var cell = rows[r2].cells[c2];
+          if (longest[c2] > 30) cell.classList.add("long");
+          else if (longest[c2] > 14) cell.classList.add("mid");
+        }
+      }
+    }
+  }
+
+  var ro = ("ResizeObserver" in window) ? new ResizeObserver(function(entries){
+    entries.forEach(function(e){ refresh(e.target); });
+  }) : null;
+
+  function refresh(el){
+    if (el.__isTable) classify(el);
+    cue(el);
+    if (el.__hintText) hintFor(el, el.__hintText);
+  }
+
+  function watch(el, opts){
+    opts = opts || {};
+    if (el.__w) return; el.__w = true;
+    el.__isTable = !!opts.table; el.__hintText = opts.hint || null;
+    el.addEventListener("scroll", function(){
+      cue(el);
+      if (el.scrollLeft > 6){ el.__swiped = true; if (el.__hint) el.__hint.classList.add("gone"); }
+    }, {passive:true});
+    if (ro) ro.observe(el);
+    refresh(el);
+  }
+
+  function scan(){
+    [].forEach.call(doc.querySelectorAll(".topbar nav, .topbar .groups, .topbar .pager, .side .shots"), function(el){ watch(el); });
+    [].forEach.call(doc.querySelectorAll(".tw, .table-wrap, .inf-table-wrap"), function(el){ watch(el, {table:true, hint:"Swipe for more columns"}); });
+    [].forEach.call(doc.querySelectorAll("figure .fb"), function(el){
+      if (el.querySelector("svg")) watch(el, {hint:"Swipe to see the full chart"});
+    });
+  }
+
+  /* ---- 4. keep the active tab centred in its one-line nav (sideways only, never moves the page) ---- */
+  function centreActive(nav){
+    var a = nav.querySelector(".on, .active, [aria-selected='true']");
+    if (!a || nav.scrollWidth <= nav.clientWidth) return;
+    var left = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
+    try { nav.scrollTo({left:Math.max(0,left), behavior:"smooth"}); } catch(e){ nav.scrollLeft = Math.max(0,left); }
+  }
+  function watchNavs(){
+    [].forEach.call(doc.querySelectorAll(".topbar nav, .topbar .groups, .topbar .pager"), function(nav){
+      if (nav.__mo) return; nav.__mo = true;
+      if ("MutationObserver" in window){
+        new MutationObserver(function(){ centreActive(nav); scan(); }).observe(nav, {attributes:true, childList:true, subtree:true, attributeFilter:["class","aria-selected"]});
+      }
+      centreActive(nav);
+    });
+  }
+
+  /* ---- 5. accessible name for the round menu button on the main site ---- */
+  var tt = doc.getElementById("totop");
+  if (tt){ tt.setAttribute("aria-label","Back to contents"); tt.setAttribute("title","Back to contents"); }
+
+  /* pages swap sections/tabs in place — rescan when that happens or the viewport changes */
+  function rescan(){ scan(); watchNavs(); }
+  doc.addEventListener("click", function(){ setTimeout(rescan, 60); setTimeout(rescan, 400); }, true);
+  window.addEventListener("hashchange", function(){ setTimeout(rescan, 60); });
+  window.addEventListener("resize", function(){ onScroll(); rescan(); });
+  if (mq.addEventListener) mq.addEventListener("change", rescan);
+  if (doc.readyState === "complete") rescan(); else window.addEventListener("load", rescan);
+  rescan();
+  setTimeout(rescan, 600);
+})();
+</script>
+<!-- MOBILE-POLISH:JS:END -->
 </body>
 </html>
