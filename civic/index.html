@@ -399,6 +399,26 @@ a{color:var(--accent)}
   .wide td.long,.wide th.long{min-width:190px}
   .wide td.mid,.wide th.mid{min-width:130px}
 
+  /* ---- wide tables: stacked cards, one per row, every cell labelled (no sideways swiping) ---- */
+  .stack{overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important}
+  .stack table{display:block;width:100%!important;min-width:0!important;border:0!important;background:transparent!important}
+  .stack thead,.stack tr.stack-head{display:none!important}
+  .stack tbody{display:block}
+  .stack tr{display:block;margin:0 0 12px!important;padding:6px 0;background:var(--surface)!important;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .stack tr.tone-success{background:var(--good-soft)!important;border-left:3px solid var(--good)}
+  .stack tr.tone-warning{background:var(--warn-soft)!important;border-left:3px solid var(--warn)}
+  .stack tr.tone-danger{background:var(--bad-soft)!important;border-left:3px solid var(--bad)}
+  .stack tr.tone-info{background:var(--accent-soft)!important;border-left:3px solid var(--accent)}
+  .stack td,.stack th{display:grid!important;grid-template-columns:104px 1fr;gap:4px 12px;align-items:start;
+    min-width:0!important;max-width:none!important;width:auto!important;position:static!important;
+    padding:7px 14px!important;border:0!important;background:transparent!important;box-shadow:none!important;
+    font-size:13.5px!important;line-height:1.45;text-align:left!important;white-space:normal!important}
+  .stack td::before,.stack th::before{content:attr(data-label);font-size:10.5px;font-weight:800;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+  .stack tr > :first-child{display:block!important;grid-template-columns:1fr;padding:8px 14px 4px!important;
+    font-size:15px!important;font-weight:700!important;color:var(--ink)}
+  .stack tr > :first-child::before{display:none}
+
   /* ---- inline-styled two-column grids always stack ---- */
   .grid[style*="grid-template-columns"]{grid-template-columns:1fr!important}
   [style*="column-count"]{column-count:1!important}
@@ -416,15 +436,18 @@ a{color:var(--accent)}
   .inf-slider-value{white-space:normal;text-align:left}
 
   /* ---- sliders: easier to grab, and they don't fight the page scroll ---- */
-  input[type=range]{touch-action:pan-y;min-height:34px}
+  input[type=range]{touch-action:pan-y}
+  input[type=range]:not(.org-slider):not(.inf-slider){min-height:34px}
+  /* custom-styled sliders paint their track on the input itself: grow the touch area with padding, not height */
+  .org-slider,.inf-slider{box-sizing:content-box!important;padding:14px 0!important;background-clip:content-box!important}
+  .budget-people-table{table-layout:auto!important;font-size:13.5px!important}
+  .budget-people-table th,.budget-people-table td{padding:10px 12px!important;width:auto!important}
+  .budget-people-table td:nth-child(2){min-width:230px}
 
-  /* ---- screenshots become a swipe carousel instead of tiny thumbnails ---- */
-  .side .shots{
-    display:flex!important;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px!important;
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain;
-  }
-  .side .shots::-webkit-scrollbar{display:none}
-  .side .shots .shot{flex:0 0 74%;scroll-snap-align:center;margin:0}
+  /* ---- screenshots: full width, stacked, nothing to swipe ---- */
+  .side .shots{display:grid!important;grid-template-columns:1fr;gap:16px;overflow:visible;padding:14px!important}
+  .side .shots .shot{margin:0;width:100%}
+  .side .shots .shot img{width:100%;height:auto;display:block}
   .phone{max-width:min(300px,86%);margin-left:auto;margin-right:auto}
 
   /* ---- Previous / Next: big, stacked, thumb-friendly ---- */
@@ -1608,9 +1631,42 @@ a{color:var(--accent)}
     var t = el.querySelector("table"); if (!t) return;
     var max = 0, rows = t.rows;
     for (var i = 0; i < rows.length; i++) max = Math.max(max, rows[i].cells.length);
+    /* wide tables become stacked cards when they are a clean grid with one header row */
+    var stackable = false, hrow = null;
+    if (t.tHead && t.tHead.rows.length === 1) hrow = t.tHead.rows[0];
+    else if (!t.tHead && rows.length > 1){
+      var allTh = rows[0].cells.length > 0;
+      for (var h0 = 0; h0 < rows[0].cells.length; h0++) if (rows[0].cells[h0].tagName !== "TH") allTh = false;
+      if (allTh) hrow = rows[0];
+    }
+    if (max >= 4 && hrow && hrow.cells.length >= 4){
+      var hc = hrow.cells.length; stackable = true;
+      for (var q = 0; q < rows.length && stackable; q++){
+        if (rows[q] === hrow) continue;
+        var cnt = 0;
+        for (var z = 0; z < rows[q].cells.length; z++){
+          if (rows[q].cells[z].rowSpan > 1) stackable = false;
+          cnt += rows[q].cells[z].colSpan || 1;
+        }
+        if (cnt !== hc) stackable = false;
+      }
+      if (stackable){
+        var labels = [].map.call(hrow.cells, function(h){ return (h.textContent || "").replace(/\s+/g," ").trim(); });
+        for (var q2 = 0; q2 < rows.length; q2++){
+          if (rows[q2] === hrow) continue;
+          var col = 0;
+          for (var z2 = 0; z2 < rows[q2].cells.length; z2++){
+            rows[q2].cells[z2].setAttribute("data-label", labels[col]);
+            col += rows[q2].cells[z2].colSpan || 1;
+          }
+        }
+        hrow.classList.add("stack-head");
+      }
+    }
+    el.classList.toggle("stack", stackable);
     el.classList.toggle("fit", max <= 3);
-    el.classList.toggle("wide", max >= 4);
-    if (max >= 4 && !el.__cols){
+    el.classList.toggle("wide", max >= 4 && !stackable);
+    if (max >= 4 && !stackable && !el.__cols){
       el.__cols = true;
       var longest = [];
       for (var r = 0; r < rows.length; r++){
@@ -1652,6 +1708,7 @@ a{color:var(--accent)}
   }
 
   function scan(){
+    [].forEach.call(doc.querySelectorAll(".budget-people-table-wrap"), function(el){ el.classList.add("tw"); });
     [].forEach.call(doc.querySelectorAll(".topbar nav, .topbar .groups, .topbar .pager, .side .shots"), function(el){ watch(el); });
     [].forEach.call(doc.querySelectorAll(".tw, .table-wrap, .inf-table-wrap"), function(el){ watch(el, {table:true, hint:"Swipe for more columns"}); });
     [].forEach.call(doc.querySelectorAll("figure .fb"), function(el){
